@@ -1,0 +1,56 @@
+class Solution {
+public:
+    TreeNode *dfs(TreeNode *root,unordered_map<TreeNode*,TreeNode*>&mp){
+    if(root==nullptr)
+    return nullptr;
+    TreeNode *lsub=dfs(root->left,mp);
+    if(lsub)
+    mp[lsub]=root;
+    TreeNode *rsub=dfs(root->right,mp);
+    if(rsub)
+    mp[rsub]=root;
+    return root;
+}
+
+vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+   unordered_map<TreeNode*,TreeNode*> mp;
+   unordered_set<TreeNode*> s;
+   vector<int>ans;
+   if(root==nullptr || target==nullptr || k<0)
+   return ans;
+   dfs(root,mp);
+   queue<TreeNode*> q;
+   q.push(target);
+   s.insert(target);
+   int level=0;
+   while(!q.empty()){
+       int size=q.size();
+       while(size--){
+           if(level==k){
+               while(!q.empty()){
+                   TreeNode* t=q.front();
+                   q.pop();
+                   ans.push_back(t->val);
+               }
+               break;
+           }
+           TreeNode* x=q.front();
+           q.pop();
+           if(x->left!=nullptr && s.find(x->left)==s.end()){
+           q.push(x->left);
+           s.insert(x->left);
+           }
+           if(x->right!=nullptr && s.find(x->right)==s.end()){
+           q.push(x->right);
+           s.insert(x->right);
+           }
+           if(mp[x]!=nullptr && s.find(mp[x])==s.end()){
+            q.push(mp[x]);
+            s.insert(mp[x]);
+           }
+       }
+       level++;
+   }       
+   return ans;
+}
+};
